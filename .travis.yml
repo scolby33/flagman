@@ -1,0 +1,58 @@
+sudo: false
+cache: pip
+
+language: python
+
+python:
+    - 3.6
+
+stages:
+    - lint
+    - docs
+    - test
+
+matrix:
+  include:
+    - env: TOXENV=dodgy
+      stage: lint
+    - env: TOXENV=flake8
+      stage: lint
+    - env: TOXENV=manifest
+      stage: lint
+    - env: TOXENV=mypy
+      stage: lint
+    - env: TOXENV=pyroma
+      stage: lint
+    - env: TOXENV=radon
+      stage: lint
+    - env: TOXENV=vulture
+      stage: lint
+    - env: TOXENV=xenon
+      stage: lint
+    - env: TOXENV=doc8
+      stage: docs
+    - env: TOXENV=readme
+      stage: docs
+    - env: TOXENV=docs
+      stage: docs
+  allow_failures:
+    - env: TOXENV=manifest
+      stage: lint
+    - env: TOXENV=vulture
+      stage: lint
+    - env: TOXENV=doc8
+      stage: docs
+    - env: TOXENV=readme
+      stage: docs
+    - env: TOXENV=docs
+      stage: docs
+
+install:
+    - pip install tox codecov coverage
+
+script:
+    - tox
+
+after_success:
+    - tox -e coverage-report
+    - codecov
