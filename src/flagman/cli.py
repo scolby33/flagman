@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Module that contains the command line for flagman
+Module that contains the command line for flagman.
 
 Why does this file exist, and why not put this in __main__?
 You might be tempted to import things from __main__ later, but that will cause
@@ -38,6 +38,12 @@ EPILOG_TEXT = """NOTES:
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
+    """Parse the arguments for the flagman CLI.
+
+    :param argv: a Squence of argument strings
+
+    :returns: the parsed arguments as an argparse Namespace
+    """
     parser = argparse.ArgumentParser(
         prog='flagman',
         description='Perform arbitrary actions on signals.',
@@ -74,7 +80,13 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     return parser.parse_args(argv[1:])
 
 
-def main() -> Optional[int]:
+def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative mood)
+    """The main function of the flagman CLI.
+
+    Don't call this from library code, use your own version implenting analogous logic.
+
+    :returns: An exit code or None
+    """
     args = parse_args(sys.argv)
     if args.list:
         colorama_init(autoreset=True)

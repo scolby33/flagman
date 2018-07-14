@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Perform arbitrary actions on signals."""
 from flagman import actions
 from flagman import types
 from flagman.core import (

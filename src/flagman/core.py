@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""The core of flagman.
+
+Contains the logic to implement signal handlers and dispatch to user-defined functions.
+"""
 import signal
 from types import FrameType
 from typing import Iterable, List, Mapping, MutableSequence, MutableSet
@@ -24,6 +28,12 @@ ACTION_BUNDLES: Mapping[SignalNumber, MutableSequence[ActionGenerator]] = {
 
 
 def create_action_bundles(args_dict: Mapping[str, Iterable[ActionName]]) -> None:
+    """Parse the enabled actions and insert them into the global ACTION_BUNDLES mapping.
+
+    The input dictionary should be like `{'usr1': ['action_1_name', 'action_2_name']}`.
+
+    :param args_dict: a mapping of strings to an Iterable of action names
+    """
     for signum in HANDLED_SIGNALS:
         action_names = args_dict.get(signum.name.lower()[3:], [])
         actions = [KNOWN_ACTIONS[action_name] for action_name in action_names]
@@ -32,6 +42,15 @@ def create_action_bundles(args_dict: Mapping[str, Iterable[ActionName]]) -> None
 
 
 def prime_action_generator(action: ActionGeneratorFunction) -> ActionGenerator:
+    """Instantiate an ActionGenerator from an ActionGeneratorFunction.
+
+    Given a function that returns an ActionGenerator, instantiate the generator
+    and run the setup code.
+
+    :param action: the ActionGenerator function
+
+    :returns: the primed ActionGenerator
+    """
     # instantiate the generator
     action_generator = action()
     # run the setup code
@@ -41,16 +60,27 @@ def prime_action_generator(action: ActionGeneratorFunction) -> ActionGenerator:
 
 
 def set_handlers() -> None:
+    """Register handlers for the signals we're interested in.
+
+    Uses the global HANDLED_SIGNALS to decide what signals to register for.
+
+    Danger starts here!
+    """
     for signum in HANDLED_SIGNALS:
 
-        def handler(num: int, frame: FrameType) -> None:
-            """flagman handler for {}""".format(signum.name)
+        def handler(num: int, frame: FrameType) -> None:  # noqa: D403 (capitalization)
+            """flagman handler for {}.""".format(signum.name)
             SIGNAL_FLAGS.add(num)
 
         signal.signal(signum, handler)
 
 
 def run() -> None:
+    """Run the flagman "event loop".
+
+    Waits for a signal to be raised and dispatches to the user-defined handlers
+    as appropriate.
+    """
     while True:
         signal.pause()
         while SIGNAL_FLAGS:

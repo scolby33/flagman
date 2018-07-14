@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Entrypoint module, in case you use `python -m flagman`
+Entrypoint module, in case you use `python -m flagman`.
 
 Why does this file exist, and why __main__? For more info, read:
   - https://www.python.org/dev/peps/pep-0338/
