@@ -34,3 +34,18 @@ def print_action2() -> ActionGenerator:  # noqa: D400,D403 ('bad' docstring)
             yield
     except GeneratorExit:
         print('cleanup 2')
+
+
+def print_action3(msg: str) -> ActionGenerator:  # noqa: D400,D403 ('bad' docstring)
+    """during setup, print 'setup 2', when signaled, print 'called 2' and sleep for 2 seconds, then print 'done 2'"""  # noqa: E501 (line too long)
+    # TODO: fix docstring
+    try:
+        print('setup 3')
+        yield
+        while True:
+            print(msg)
+            sleep(2)
+            print('done 3')
+            yield
+    except GeneratorExit:
+        print('cleanup 3')
