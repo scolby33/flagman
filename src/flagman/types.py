@@ -3,6 +3,9 @@
 from typing import Callable, Generator
 
 ActionGenerator = Generator[None, None, None]
-ActionGeneratorFunction = Callable[[], ActionGenerator]
+ActionGeneratorFunction = Callable[
+    ..., ActionGenerator
+]  # type: ignore (explicit "Any")
 ActionName = str
+ActionArgument = str
 SignalNumber = int

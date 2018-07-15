@@ -58,10 +58,12 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         parser.add_argument(
             '--{}'.format(name[3:].lower()),
             action='append',
+            nargs='+',
             default=[],
-            choices=KNOWN_ACTIONS.keys(),
+            # TODO: custom choices container
+            # choices=KNOWN_ACTIONS.keys(),
             help='add an action for {}'.format(name),
-            metavar='ACTION',
+            metavar=('ACTION', 'ARGUMENT'),
         )
     parser.add_argument(
         '--quiet',
