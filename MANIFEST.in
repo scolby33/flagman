@@ -8,4 +8,4 @@ include tox.ini
 
 include *.rst
 
-global-exclude *.py[cod] __pycache__ *.so *.dylib .DS_Store
+global-exclude *.py[cod] __pycache__ *.so *.dylib .DS_Store *.swp
