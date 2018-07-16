@@ -36,8 +36,6 @@ matrix:
     - env: TOXENV=docs
       stage: docs
   allow_failures:
-    - env: TOXENV=manifest
-      stage: lint
     - env: TOXENV=vulture
       stage: lint
     - env: TOXENV=doc8
