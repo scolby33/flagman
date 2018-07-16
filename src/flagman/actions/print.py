@@ -14,7 +14,7 @@ class PrintAction(Action):
     (message: str)
     """
 
-    def set_up(self, msg: str) -> None:
+    def set_up(self, msg: str) -> None:  # type: ignore
         """Store the message to be printed and print "init" message.
 
         :param msg: the message
@@ -37,7 +37,8 @@ class DelayedPrintAction(PrintAction):
     (message: str, delay: int)
     """  # noqa: E501
 
-    def set_up(self, msg: str, delay: str) -> None:
+    # TODO fix the type: ignore here once I figure out how to denote *args
+    def set_up(self, msg: str, delay: str) -> None:  # type: ignore
         """Store the message and the delay.
 
         :param msg: the message

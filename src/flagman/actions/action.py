@@ -6,7 +6,9 @@ from types import TracebackType
 from typing import Any, Optional, Type
 
 
-class Action(Generator, metaclass=ABCMeta):
+# TODO add type information Generator[None, None, None]
+# https://github.com/python/mypy/issues/5365
+class Action(Generator, metaclass=ABCMeta):  # type: ignore
     """The base Action class."""
 
     def __init__(self, *args: str) -> None:
