@@ -127,7 +127,8 @@ def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative m
     """
     args = parse_args(sys.argv)
     if args.list:
-        return list_actions()
+        list_actions()
+        return None
 
     print('PID: {}'.format(os.getpid()), flush=True)
 
