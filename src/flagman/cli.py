@@ -82,6 +82,38 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     return parser.parse_args(argv[1:])
 
 
+def list_actions() -> None:
+    """Pretty-print the list of available actions to stdout."""
+    colorama_init()
+    max_action_name_len = max(len(name) for name in KNOWN_ACTIONS.keys())
+    wrapper = textwrap.TextWrapper(
+        width=80 - max_action_name_len - 3,
+        subsequent_indent=' ' * (max_action_name_len + 3),
+    )
+    print(
+        '{bright}{name:<{max_action_name_len}} -{normal} {doc}'.format(
+            bright=Style.BRIGHT,
+            name='name',
+            max_action_name_len=max_action_name_len,
+            normal=Style.NORMAL,
+            doc='description [(argument: type, ...)]',
+        )
+    )
+    print('-' * 80)
+    for name, action in KNOWN_ACTIONS.items():
+        wrapped_doc = wrapper.fill(' '.join(str(action.__doc__).split()))
+        print(
+            '{bright}{name:<{max_action_name_len}} -{normal} {doc}'.format(
+                bright=Style.BRIGHT,
+                name=name,
+                max_action_name_len=max_action_name_len,
+                normal=Style.NORMAL,
+                doc=wrapped_doc,
+            )
+        )
+    return None
+
+
 def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative mood)
     """The main function of the flagman CLI.
 
@@ -91,24 +123,7 @@ def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative m
     """
     args = parse_args(sys.argv)
     if args.list:
-        colorama_init(autoreset=True)
-        max_action_name_len = max(len(name) for name in KNOWN_ACTIONS.keys())
-        wrapper = textwrap.TextWrapper(
-            width=80 - max_action_name_len - 3,
-            subsequent_indent=' ' * (max_action_name_len + 3),
-        )
-        for name, action in KNOWN_ACTIONS.items():
-            wrapped_doc = wrapper.fill(str(action.__doc__))
-            print(
-                '{bright}{name:<{max_action_name_len}} -{normal} {doc}'.format(
-                    bright=Style.BRIGHT,
-                    name=name,
-                    max_action_name_len=max_action_name_len,
-                    normal=Style.NORMAL,
-                    doc=wrapped_doc,
-                )
-            )
-        return None
+        return list_actions()
 
     print('PID: {}'.format(os.getpid()), flush=True)
 
