@@ -5,25 +5,29 @@ Contains the logic to implement signal handlers and dispatch to user-defined fun
 """
 import signal
 from types import FrameType
-from typing import Iterable, List, Mapping, MutableSequence, MutableSet, Sequence, Union
+from typing import (
+    Iterable,
+    List,
+    Mapping,
+    MutableSequence,
+    MutableSet,
+    Sequence,
+    Type,
+    Union,
+)
 
 import pkg_resources
 
-from flagman.types import (
-    ActionArgument,
-    ActionGenerator,
-    ActionGeneratorFunction,
-    ActionName,
-    SignalNumber,
-)
+from flagman.actions import Action
+from flagman.types import ActionArgument, ActionName, SignalNumber
 
 HANDLED_SIGNALS: List[signal.Signals] = [signal.SIGUSR1, signal.SIGUSR2, signal.SIGHUP]
 SIGNAL_FLAGS: MutableSet[SignalNumber] = set()
-KNOWN_ACTIONS: Mapping[ActionName, ActionGeneratorFunction] = {
+KNOWN_ACTIONS: Mapping[ActionName, Type[Action]] = {
     action.name: action.load()
     for action in pkg_resources.iter_entry_points('flagman.action')
 }
-ACTION_BUNDLES: Mapping[SignalNumber, MutableSequence[ActionGenerator]] = {
+ACTION_BUNDLES: Mapping[SignalNumber, MutableSequence[Action]] = {
     signum.value: [] for signum in HANDLED_SIGNALS
 }
 
@@ -38,7 +42,7 @@ def create_action_bundles(
      'usr2': [['action3'], ['action4', 'arg4a', 'arg4b']]}`.
 
 
-    :param args_dict: a mapping of strings to an Iterable of action names
+    :param args_dict: a mapping of strings to an Iterable of Action names
     """
     for signum in HANDLED_SIGNALS:
         action_calls = args_dict.get(signum.name[3:].lower(), [])
@@ -53,22 +57,19 @@ def create_action_bundles(
 
 
 def prime_action_generator(
-    action: ActionGeneratorFunction, args: Iterable[ActionArgument]
-) -> ActionGenerator:
-    """Instantiate an ActionGenerator from an ActionGeneratorFunction.
+    action: Type[Action], args: Iterable[ActionArgument]
+) -> Action:
+    """Instantiate an Action.
 
-    Given a function that returns an ActionGenerator, instantiate the generator
-    and run the setup code.
+    Given a class of type Action, instantiate the class with the passed-in arguments.
 
-    :param action: the ActionGenerator function
-    :param args: an Iterable of strings, the aruments to the ActionGeneratorFunction
+    :param action: the Action
+    :param args: an Iterable of strings, the aruments to the Action
 
-    :returns: the primed ActionGenerator
+    :returns: the primed Action
     """
-    # instantiate the generator
+    # instantiate the generator and run set up code
     action_generator = action(*args)
-    # run the setup code
-    next(action_generator)
 
     return action_generator
 

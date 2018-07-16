@@ -3,6 +3,7 @@
 
 These simple actions are probably only useful for debugging.
 """
-from flagman.actions.print import print_action, print_action2, print_action3
+from flagman.actions.action import Action
+from flagman.actions.print import DelayedPrintAction, PrintAction
 
-__all__ = ['print_action', 'print_action2', 'print_action3']
+__all__ = ['Action', 'PrintAction', 'DelayedPrintAction']

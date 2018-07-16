@@ -5,47 +5,49 @@ Most likely only useful for debugging.
 """
 from time import sleep
 
-from flagman.types import ActionGenerator
+from flagman.actions import Action
 
 
-def print_action() -> ActionGenerator:  # noqa: D400,D403 ('bad' docstring)
-    """during setup, print 'doing setup', when signaled, print 'called' and block for 10 seconds, then print 'done'"""  # noqa: E501 (line too long)
-    try:
-        print('doing setup')
-        yield
-        while True:
-            print('called')
-            sleep(10)
-            print('done')
-            yield
-    except GeneratorExit:
+class PrintAction(Action):
+    """A simple Action that prints messages at the various stages of execution.
+
+    (message: str)
+    """
+
+    def set_up(self, msg: str) -> None:
+        """Store the message to be printed and print "init" message.
+
+        :param msg: the message
+        """
+        self._msg = msg
+        print('init')
+
+    def run(self) -> None:
+        """Print the message."""
+        print(self._msg)
+
+    def tear_down(self) -> None:
+        """Print "cleanup" message."""
         print('cleanup')
 
 
-def print_action2() -> ActionGenerator:  # noqa: D400,D403 ('bad' docstring)
-    """during setup, print 'setup 2', when signaled, print 'called 2' and sleep for 2 seconds, then print 'done 2'"""  # noqa: E501 (line too long)
-    try:
-        print('setup 2')
-        yield
-        while True:
-            print('called 2')
-            sleep(2)
-            print('done 2')
-            yield
-    except GeneratorExit:
-        print('cleanup 2')
+class DelayedPrintAction(PrintAction):
+    """An Action that prints messages at the various stages of execution and has a configurable delay in the run stage.
 
+    (message: str, delay: int)
+    """  # noqa: E501
 
-def print_action3(msg: str) -> ActionGenerator:  # noqa: D400,D403 ('bad' docstring)
-    """during setup, print 'setup 2', when signaled, print 'called 2' and sleep for 2 seconds, then print 'done 2'"""  # noqa: E501 (line too long)
-    # TODO: fix docstring
-    try:
-        print('setup 3')
-        yield
-        while True:
-            print(msg)
-            sleep(2)
-            print('done 3')
-            yield
-    except GeneratorExit:
-        print('cleanup 3')
+    def set_up(self, msg: str, delay: str) -> None:
+        """Store the message and the delay.
+
+        :param msg: the message
+        :param delay: the delay in seconds
+        """
+        self._delay = int(delay)
+        super().set_up(msg)
+
+    def run(self) -> None:
+        """Print the message, delay, and print a finished message."""
+        super().run()
+        sleep(self._delay)
+        print('finished delaying')
