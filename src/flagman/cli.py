@@ -29,6 +29,7 @@ from flagman import (
     run,
     set_handlers,
 )
+from flagman.sd_notify import SystemdNotifier
 
 EPILOG_TEXT = """NOTES:
  - All options to add actions for signals may be passed multiple times.
@@ -65,6 +66,9 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
             help='add an action for {}'.format(name),
             metavar=('ACTION', 'ARGUMENT'),
         )
+    parser.add_argument(
+        '--no-systemd', action='store_false', help='do not notify systemd about status'
+    )
     parser.add_argument(
         '--quiet',
         '-q',
@@ -130,6 +134,9 @@ def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative m
     args_dict = vars(args)
     create_action_bundles(args_dict)
     set_handlers()
+    if not args.no_systemd:
+        notifier = SystemdNotifier()
+        notifier.notify('READY=1')
     run()
     return None
 

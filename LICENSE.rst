@@ -1,5 +1,16 @@
+License
+=======
+
+The systemd notification portion of flagman is originally
+Copyright (c) 2016 Brett Bethke and is provided under the MIT license.
+The original source is found at https://github.com/bb4242/sdnotify.
+
+The remainder of flagman is Copyright (c) 2018 Scott Colby and is available
+under the MIT license.
+
+
 MIT License
-===========
+-----------
 
 Copyright (c) 2018 Scott Colby
 
@@ -20,3 +31,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
