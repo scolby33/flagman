@@ -65,8 +65,6 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
             action='append',
             nargs='+',
             default=[],
-            # TODO: custom choices container
-            # choices=KNOWN_ACTIONS.keys(),
             help='add an action for {}'.format(name),
             metavar=('ACTION', 'ARGUMENT'),
         )
