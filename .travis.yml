@@ -1,56 +1,88 @@
-sudo: false
-cache: pip
+# Organize the .travis.yml by the steps in the build lifecycle
+# https://docs.travis-ci.com/user/customizing-the-build/#The-Build-Lifecycle
 
+# 0. language and build environment
 language: python
 
-python:
-    - 3.6
+python: 3.7
+dist: xenial
+sudo: true
 
+# 0.5 jobs, stages, and matrix
 stages:
     - lint
     - docs
     - test
 
-matrix:
+env:
+    - TOXENV=py
+
+jobs:
   include:
-    - env: TOXENV=dodgy
-      stage: lint
+    # lint stage
+    - stage: lint
+      env: TOXENV=dodgy
     - env: TOXENV=flake8
-      stage: lint
     - env: TOXENV=manifest
-      stage: lint
     - env: TOXENV=mypy
-      stage: lint
-    - env: TOXENV=pyroma
-      stage: lint
+    - env: TOXENV=pyroma  # TODO move to deploy?
     - env: TOXENV=radon
-      stage: lint
     - env: TOXENV=vulture
-      stage: lint
     - env: TOXENV=xenon
-      stage: lint
-    - env: TOXENV=doc8
-      stage: docs
+
+    # docs stage
+    - stage: docs
+      env: TOXENV=doc8
     - env: TOXENV=readme
-      stage: docs
     - env: TOXENV=docs
-      stage: docs
+
+matrix:
   allow_failures:
     - env: TOXENV=vulture
-      stage: lint
     - env: TOXENV=doc8
-      stage: docs
     - env: TOXENV=readme
-      stage: docs
     - env: TOXENV=docs
-      stage: docs
+    - env: TOXENV=py
 
+# 1. apt addons
+
+
+# 2. cache components
+cache: pip
+
+
+# 3. before_install
+
+
+# 4. install
 install:
-    - pip install tox codecov coverage
+    - sh -c 'if [ "$TOXENV" = "py" ]; then pip install tox codecov; else pip install tox; fi'
 
+# 5. before_script
+
+
+# 6. script
 script:
     - tox
 
+
+# 7. before_cache
+
+
+# 8. after_success/after_failure
 after_success:
-    - tox -e coverage-report
-    - codecov
+    - sh -c 'if [ "$TOXENV" = "py" ]; then tox -e coverage-report; codecov; fi'
+
+
+# 9. before_deploy
+
+
+# 10. deploy
+
+
+# 11. after_deploy
+
+
+# 12. after_script
+
+
