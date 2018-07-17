@@ -9,7 +9,7 @@ Why does this file exist, and why __main__? For more info, read:
   - https://docs.python.org/3/using/cmdline.html#cmdoption-m
 """
 
-from flagman.cli import main
+from flagman.cli import main_wrapper
 
 if __name__ == '__main__':
-    main()
+    main_wrapper()

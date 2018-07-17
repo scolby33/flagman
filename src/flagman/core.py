@@ -110,7 +110,7 @@ def set_handlers() -> None:
 
     Danger starts here!
     """
-    logger.info('Registering signal handlers')
+    logger.info('Registering signal handlers for actions')
     for signum in HANDLED_SIGNALS:
         if len(ACTION_BUNDLES[signum]) > 0:
 
@@ -127,7 +127,7 @@ def set_handlers() -> None:
                 'No actions registered for signal `%s`; skipping handler registration',
                 signum.name,
             )
-    logger.info('Done registering signal handlers')
+    logger.info('Done registering signal handlers for actions')
 
 
 def run() -> None:

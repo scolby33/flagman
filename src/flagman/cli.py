@@ -17,6 +17,7 @@ import argparse
 import logging
 import os
 import sys
+import signal
 import textwrap
 from typing import Optional, Sequence
 
@@ -40,6 +41,10 @@ EPILOG_TEXT = """NOTES:
    be taken in the order they were passed on the command line.
  - Calling with no actions set is a critical error and will cause an immediate
    exit with code 2."""
+
+
+def _sigterm_handler(signum, frame):
+    sys.exit('from sigterm handler')
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
@@ -156,6 +161,8 @@ def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative m
         logger.critical('No actions configured; exiting')
         return 2
 
+    logger.debug('Registering SIGTERM handler')
+    signal.signal(signal.SIGTERM, _sigterm_handler)
     set_handlers()
     if not args.no_systemd:
         notifier = SystemdNotifier()
@@ -164,5 +171,23 @@ def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative m
     return None
 
 
+def main_wrapper() -> Optional[int]:
+    """Main wrapper that handles graceful exiting on KeyboardInterrupt.
+
+    :returns: An exit code or None
+    """
+    try:
+        return main()
+    except KeyboardInterrupt:
+        logger.info('Exiting on KeyboardInterrupt')
+        return
+    except SystemExit as e:
+        if e.args[0] == 'from sigterm handler':
+            logger.info('Exiting on SIGTERM')
+        else:
+            logger.info('Exiting on SystemExit')
+        return
+
+
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main_wrapper())
