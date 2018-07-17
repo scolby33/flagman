@@ -50,7 +50,7 @@ ACTION_BUNDLES: Mapping[SignalNumber, MutableSequence[Action]] = {
 
 def create_action_bundles(
     args_dict: Mapping[str, Iterable[Sequence[Union[ActionName, ActionArgument]]]]
-) -> None:
+) -> int:
     """Parse the enabled actions and insert them into the global ACTION_BUNDLES mapping.
 
     The input dictionary should be like
@@ -59,6 +59,7 @@ def create_action_bundles(
 
 
     :param args_dict: a mapping of strings to an Iterable of Action names
+    :returns: The number of configured actions
     """
     logger.debug('Creating action bundles')
     for signum in HANDLED_SIGNALS:
@@ -72,6 +73,8 @@ def create_action_bundles(
             prime_action_generator(action[0], action[1]) for action in actions
         ]
         ACTION_BUNDLES[signum.value].extend(action_generators)
+
+    return sum(len(bundle) for bundle in ACTION_BUNDLES.values())
 
 
 def prime_action_generator(

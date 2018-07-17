@@ -38,7 +38,8 @@ EPILOG_TEXT = """NOTES:
  - All options to add actions for signals may be passed multiple times.
  - When a signal with multiple actions is handled, the actions are guaranteed to
    be taken in the order they were passed on the command line.
- - Calling with no actions set is an error and will cause an immediate exit."""
+ - Calling with no actions set is a critical error and will cause an immediate
+   exit with code 2."""
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
@@ -152,7 +153,11 @@ def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative m
             root_logger.setLevel(logging.DEBUG)
 
     args_dict = vars(args)
-    create_action_bundles(args_dict)
+    num_actions = create_action_bundles(args_dict)
+    if num_actions == 0:
+        logger.critical('No actions configured; exiting')
+        return 2
+
     set_handlers()
     if not args.no_systemd:
         notifier = SystemdNotifier()
