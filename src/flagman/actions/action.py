@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 """The base Action class for all other Actions to inherit from."""
 from abc import ABCMeta, abstractmethod
-from collections.abc import Generator
 from types import TracebackType
-from typing import Any, Optional, Type
+from typing import Any, Generator, Optional, Type
 
 
-# TODO add type information Generator[None, None, None]
-# https://github.com/python/mypy/issues/5365
-class Action(Generator, metaclass=ABCMeta):  # type: ignore
+class Action(Generator[None, None, None], metaclass=ABCMeta):
     """The base Action class."""
 
     def __init__(self, *args: str) -> None:
