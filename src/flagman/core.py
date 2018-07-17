@@ -112,12 +112,22 @@ def set_handlers() -> None:
     """
     logger.info('Registering signal handlers')
     for signum in HANDLED_SIGNALS:
+        if len(ACTION_BUNDLES[signum]) > 0:
 
-        def handler(num: int, frame: FrameType) -> None:  # noqa: D403 (capitalization)
-            """flagman handler for {}.""".format(signum.name)
-            SIGNAL_FLAGS.add(num)
+            def handler(
+                num: int, frame: FrameType
+            ) -> None:  # noqa: D403 (capitalization)
+                """flagman handler for {}.""".format(signum.name)
+                SIGNAL_FLAGS.add(num)
 
-        signal.signal(signum, handler)
+            logger.debug('Registering signal handler for signal `%s`', signum.name)
+            signal.signal(signum, handler)
+        else:
+            logger.debug(
+                'No actions registered for signal `%s`; skipping handler registration',
+                signum.name,
+            )
+    logger.info('Done registering signal handlers')
 
 
 def run() -> None:
