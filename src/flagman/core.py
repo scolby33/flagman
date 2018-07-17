@@ -21,12 +21,25 @@ import pkg_resources
 from flagman.actions import Action
 from flagman.types import ActionArgument, ActionName, SignalNumber
 
+#: Signals in this list are handled by flagman.
+#: The CLI module auto-generates the appropriate CLI option for each signal.
 HANDLED_SIGNALS: List[signal.Signals] = [signal.SIGUSR1, signal.SIGUSR2, signal.SIGHUP]
+
+#: The global flag set for raised signals.
+#: A signal that has been delivered to a handler will have its number in the set.
+#: The number is removed after the actions for the signal have been executed.
 SIGNAL_FLAGS: MutableSet[SignalNumber] = set()
+
+#: Mapping of action entry point names to Action classes.
+#: Populated from the pkg_resources `flagman.action` entry point group.
 KNOWN_ACTIONS: Mapping[ActionName, Type[Action]] = {
     action.name: action.load()
     for action in pkg_resources.iter_entry_points('flagman.action')
 }
+
+#: Mapping of SignalNumbers to sequences of instantiated Actions ("action bundles")
+#: that will be executed for that signal.
+#: Populated by `create_action_bundles`.
 ACTION_BUNDLES: Mapping[SignalNumber, MutableSequence[Action]] = {
     signum.value: [] for signum in HANDLED_SIGNALS
 }
