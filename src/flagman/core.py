@@ -3,6 +3,7 @@
 
 Contains the logic to implement signal handlers and dispatch to user-defined functions.
 """
+import logging
 import signal
 from types import FrameType
 from typing import (
@@ -20,6 +21,8 @@ import pkg_resources
 
 from flagman.actions import Action
 from flagman.types import ActionArgument, ActionName, SignalNumber
+
+logger = logging.getLogger(__name__)
 
 #: Signals in this list are handled by flagman.
 #: The CLI module auto-generates the appropriate CLI option for each signal.
@@ -57,7 +60,9 @@ def create_action_bundles(
 
     :param args_dict: a mapping of strings to an Iterable of Action names
     """
+    logger.debug('Creating action bundles')
     for signum in HANDLED_SIGNALS:
+        logger.debug('Creating action bundle for %s', signum.name)
         action_calls = args_dict.get(signum.name[3:].lower(), [])
         actions = [
             (KNOWN_ACTIONS[action_call[0]], action_call[1:])
@@ -81,6 +86,12 @@ def prime_action_generator(
 
     :returns: the primed Action
     """
+    logger.debug(
+        'Priming action class `%s.%s` with arguments `%s`',
+        action.__module__,
+        action.__qualname__,
+        args,
+    )
     # instantiate the generator and run set up code
     action_generator = action(*args)
 
@@ -94,6 +105,7 @@ def set_handlers() -> None:
 
     Danger starts here!
     """
+    logger.info('Registering signal handlers')
     for signum in HANDLED_SIGNALS:
 
         def handler(num: int, frame: FrameType) -> None:  # noqa: D403 (capitalization)
@@ -109,11 +121,15 @@ def run() -> None:
     Waits for a signal to be raised and dispatches to the user-defined handlers
     as appropriate.
     """
+    logger.info('Starting event loop')
     while True:
+        logger.debug('Pausing for signal')
         signal.pause()
+        logger.debug('Woke for signal')
         while SIGNAL_FLAGS:
             try:
                 num = SIGNAL_FLAGS.pop()
+                logger.debug('Found raised flag for signal number `%d`', num)
             except KeyError:
                 continue
 
@@ -121,7 +137,23 @@ def run() -> None:
             for action_generator in ACTION_BUNDLES[num]:
                 actions_to_take.append(action_generator)
 
+            logger.debug(
+                'Taking actions `%s` for signal number `%d`',
+                [action.__class__.__name__ for action in actions_to_take],
+                num,
+            )
             for action in actions_to_take:
+                logger.debug(
+                    'Taking action `%s` for signal number `%d`',
+                    action.__class__.__name__,
+                    num,
+                )
                 next(action)
+                logger.debug(
+                    'Done taking action `%s` for signal number `%d`',
+                    action.__class__.__name__,
+                    num,
+                )
 
+            logger.debug('Lowering flag for signal number `%d`', num)
             SIGNAL_FLAGS.discard(num)
