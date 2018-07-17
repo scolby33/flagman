@@ -173,7 +173,9 @@ def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative m
     return None
 
 
-def main_wrapper() -> Optional[int]:
+def main_wrapper() -> Optional[
+    int
+]:  # noqa: D401 (First line should be in imperative mood)
     """Main wrapper that handles graceful exiting on KeyboardInterrupt.
 
     :returns: An exit code or None
