@@ -16,6 +16,7 @@ stages:
 
 env:
   - TOXENV=py IGNORED=ignored
+  - TOXENV=py OTHER=special
 
 jobs:
   include:
