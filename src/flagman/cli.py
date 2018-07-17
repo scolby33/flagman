@@ -14,6 +14,7 @@ problems--the code will get executed twice:
 Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
 import argparse
+import logging
 import os
 import sys
 import textwrap
@@ -30,6 +31,8 @@ from flagman import (
     set_handlers,
 )
 from flagman.sd_notify import SystemdNotifier
+
+logger = logging.getLogger(__name__)
 
 EPILOG_TEXT = """NOTES:
  - All options to add actions for signals may be passed multiple times.
@@ -73,7 +76,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         '--quiet',
         '-q',
         action='store_true',
-        help="don't output anything; overrides `--verbose`",
+        help='only output critial messages; overrides `--verbose`',
     )
     parser.add_argument(
         '--verbose',
@@ -130,7 +133,23 @@ def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative m
         list_actions()
         return None
 
-    print('PID: {}'.format(os.getpid()), flush=True)
+    logging.basicConfig(level=logging.INFO)
+    logger.info('PID: %d', os.getpid())
+
+    root_logger = logging.getLogger()
+    if args.quiet:
+        logger.info('Setting loglevel to CRITICAL')
+        root_logger.setLevel(logging.CRITICAL)
+    else:
+        if args.verbose <= 0:
+            logger.info('Setting loglevel to WARNING')
+            root_logger.setLevel(logging.WARNING)
+        elif args.verbose == 1:
+            logger.info('Setting loglevel to INFO')
+            root_logger.setLevel(logging.INFO)
+        elif args.verbose >= 2:
+            logger.info('Setting loglevel to DEBUG')
+            root_logger.setLevel(logging.DEBUG)
 
     args_dict = vars(args)
     create_action_bundles(args_dict)
