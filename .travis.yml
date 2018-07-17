@@ -42,7 +42,6 @@ matrix:
     - env: TOXENV=doc8
     - env: TOXENV=readme
     - env: TOXENV=docs
-    - env: TOXENV=py
 
 # 1. apt addons
 
