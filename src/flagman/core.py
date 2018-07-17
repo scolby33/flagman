@@ -65,10 +65,12 @@ def create_action_bundles(
     for signum in HANDLED_SIGNALS:
         logger.debug('Creating action bundle for %s', signum.name)
         action_calls = args_dict.get(signum.name[3:].lower(), [])
-        actions = [
-            (KNOWN_ACTIONS[action_call[0]], action_call[1:])
-            for action_call in action_calls
-        ]
+        actions = []
+        for action_call in action_calls:
+            try:
+                actions.append((KNOWN_ACTIONS[action_call[0]], action_call[1:]))
+            except KeyError:
+                logger.error('Unknown action `%s`; skipping', action_call[0])
         action_generators = [
             prime_action_generator(action[0], action[1]) for action in actions
         ]
