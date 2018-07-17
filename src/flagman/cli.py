@@ -19,6 +19,7 @@ import os
 import signal
 import sys
 import textwrap
+from types import FrameType
 from typing import Optional, Sequence
 
 from colorama import init as colorama_init
@@ -43,7 +44,8 @@ EPILOG_TEXT = """NOTES:
    exit with code 2."""
 
 
-def _sigterm_handler(signum, frame):
+def _sigterm_handler(signum: int, frame: FrameType) -> None:
+    """Raise SystemExit on SIGTERM."""
     sys.exit('from sigterm handler')
 
 
@@ -180,13 +182,13 @@ def main_wrapper() -> Optional[int]:
         return main()
     except KeyboardInterrupt:
         logger.info('Exiting on KeyboardInterrupt')
-        return
+        return None
     except SystemExit as e:
         if e.args[0] == 'from sigterm handler':
             logger.info('Exiting on SIGTERM')
         else:
             logger.info('Exiting on SystemExit')
-        return
+        return None
 
 
 if __name__ == '__main__':
