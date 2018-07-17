@@ -15,7 +15,7 @@ stages:
   - test
 
 env:
-  - TOXENV=py
+  - TOXENV=py IGNORED=ignored
 
 jobs:
   include:
