@@ -5,6 +5,7 @@ include .flake8
 include .travis.yml
 include mypy.ini
 include tox.ini
+include vulture_whitelist.py
 
 include *.rst
 
