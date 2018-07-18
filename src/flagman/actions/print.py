@@ -6,6 +6,7 @@ Most likely only useful for debugging.
 from time import sleep
 
 from flagman.actions import Action
+from flagman.exceptions import ActionClosed
 
 
 class PrintAction(Action):
@@ -51,3 +52,23 @@ class DelayedPrintAction(PrintAction):
         super().run()
         sleep(self._delay)
         print('finished delaying')
+
+
+class PrintOnceAction(PrintAction):
+    """An Action that prints a message once and then cleans up after itself.
+
+    (message: str)
+    """
+
+    def set_up(self, msg: str) -> None:  # type: ignore
+        """Store the message.
+
+        :param msg: the message
+        """
+        super().set_up(msg)
+
+    def run(self) -> None:
+        """Print the message and close the action."""
+        super().run()
+        self._close()
+        raise ActionClosed('Only print once')
