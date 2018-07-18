@@ -2,6 +2,7 @@
 """Perform arbitrary actions on signals."""
 from flagman import actions
 from flagman import types
+from flagman.actions import Action
 from flagman.core import (
     HANDLED_SIGNALS,
     KNOWN_ACTIONS,
@@ -12,6 +13,7 @@ from flagman.core import (
 from flagman.exceptions import ActionClosed
 
 __all__ = [
+    'Action',
     'ActionClosed',
     'create_action_bundles',
     'set_handlers',
