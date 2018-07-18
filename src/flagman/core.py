@@ -21,6 +21,7 @@ from typing import (
 import pkg_resources
 
 from flagman.actions import Action
+from flagman.exceptions import ActionClosed
 from flagman.types import ActionArgument, ActionName, SignalNumber
 
 logger = logging.getLogger(__name__)
@@ -48,7 +49,7 @@ KNOWN_ACTIONS: Mapping[ActionName, Type[Action]] = {
 #: Mapping of SignalNumbers to sequences of instantiated Actions ("action bundles")
 #: that will be executed for that signal.
 #: Populated by `create_action_bundles`.
-ACTION_BUNDLES: Mapping[SignalNumber, MutableSequence[Action]] = {
+ACTION_BUNDLES: Mapping[SignalNumber, List[Action]] = {
     signum.value: [] for signum in HANDLED_SIGNALS
 }
 
@@ -153,27 +154,42 @@ def run() -> None:
             except KeyError:
                 continue
 
-            actions_to_take = []
-            for action_generator in ACTION_BUNDLES[num]:
-                actions_to_take.append(action_generator)
-
             logger.debug(
                 'Taking actions `%s` for signal number `%d`',
-                [action.__class__.__name__ for action in actions_to_take],
+                [action.__class__.__name__ for action in ACTION_BUNDLES[num]],
                 num,
             )
-            for action in actions_to_take:
-                logger.debug(
-                    'Taking action `%s` for signal number `%d`',
-                    action.__class__.__name__,
-                    num,
-                )
-                logger.debug(
-                    'Done taking action `%s` for signal number `%d`',
-                    action.__class__.__name__,
-                    num,
-                )
+
+            # make a copy since we might want to remove an element while iterating
+            actions_to_take = enumerate(ACTION_BUNDLES[num].copy())
+
+            idx_adjust = 0
+            for idx, action in actions_to_take:
+                try:
+                    logger.debug(
+                        'Taking action `%s` for signal number `%d`',
+                        action.__class__.__name__,
+                        num,
+                    )
                     action._run()
+                    logger.debug(
+                        'Done taking action `%s` for signal number `%d`',
+                        action.__class__.__name__,
+                        num,
+                    )
+                except ActionClosed:
+                    logger.warning(
+                        'Received `ActionClosed`; removing action `%s`',
+                        action.__class__.__name__,
+                        exc_info=True,
+                    )
+                    ACTION_BUNDLES[num].pop(idx - idx_adjust)
+                    idx_adjust += 1
 
             logger.debug('Lowering flag for signal number `%d`', num)
             SIGNAL_FLAGS.discard(num)
+
+            # check if there are any actions left in our bundles
+            if not any(ACTION_BUNDLES.values()):
+                logger.warning('No actions remain active; exiting event loop')
+                return None

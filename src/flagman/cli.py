@@ -76,6 +76,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
             metavar=('ACTION', 'ARGUMENT'),
         )
     parser.add_argument(
+        '--successful-empty',
+        action='store_false',
+        help='if all actions are removed, exit with 0 instead of the default 1',
+    )
+    parser.add_argument(
         '--no-systemd', action='store_false', help='do not notify systemd about status'
     )
     parser.add_argument(
@@ -169,8 +174,11 @@ def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative m
     if not args.no_systemd:
         notifier = SystemdNotifier()
         notifier.notify('READY=1')
+
     run()
-    return None
+
+    # if we got here, run() exited because there were no actions left
+    return args.successful_empty
 
 
 def main_wrapper() -> Optional[

@@ -9,8 +9,10 @@ from flagman.core import (
     run,
     set_handlers,
 )
+from flagman.exceptions import ActionClosed
 
 __all__ = [
+    'ActionClosed',
     'create_action_bundles',
     'set_handlers',
     'run',

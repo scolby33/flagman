@@ -2,6 +2,7 @@
 """The base Action class for all other Actions to inherit from."""
 from abc import ABCMeta, abstractmethod
 
+from flagman.exceptions import ActionClosed
 
 
 class Action(metaclass=ABCMeta):
@@ -20,7 +21,7 @@ class Action(metaclass=ABCMeta):
         if not self._closed:
             self.run()
         else:
-            raise StopIteration
+            raise ActionClosed
 
     def _close(self) -> None:
         """Close the action, preventing future runs and executing tear down logic."""
