@@ -163,12 +163,12 @@ def run() -> None:
                     action.__class__.__name__,
                     num,
                 )
-                next(action)
                 logger.debug(
                     'Done taking action `%s` for signal number `%d`',
                     action.__class__.__name__,
                     num,
                 )
+                    action._run()
 
             logger.debug('Lowering flag for signal number `%d`', num)
             SIGNAL_FLAGS.discard(num)
