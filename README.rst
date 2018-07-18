@@ -110,7 +110,7 @@ Next is the :code:`set_up()` method.
 
 All arguments will be passed to this method as strings. If other types are expected,
 do the conversion in :code:`set_up()` and raise errors as necessary.
-If `:code:`mypy` <http://mypy-lang.org/>`_ is being used, the :code:`# type: ignore`
+If `mypy <http://mypy-lang.org/>`_ is being used, the :code:`# type: ignore`
 comment is required since the parent implementation takes :code:`*args`.
 
 Do any required set up in this method: parsing arguments, reading external data, etc.
