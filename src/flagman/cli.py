@@ -22,8 +22,25 @@ import textwrap
 from types import FrameType
 from typing import Optional, Sequence
 
-from colorama import init as colorama_init
-from colorama import Style
+try:
+    from colorama import init as colorama_init
+    from colorama import Style
+except ImportError:
+    colorama_init = lambda: None  # noqa: E731
+
+    class AllAttrEmptyString:
+        """Return '' for any attribute."""
+
+        def __getattr__(self, name: str) -> str:
+            """Return '' for any attribute.
+
+            :param name: the attribute name
+            :returns: an empty string
+            """
+            return ''
+
+    Style = AllAttrEmptyString()
+
 
 from flagman import (
     HANDLED_SIGNALS,
