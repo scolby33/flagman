@@ -42,8 +42,33 @@ Perform arbitrary actions on signals.
     cleanup
 
 
+.. contents:: :local:
+
+
+Features
+--------
+
+- Safe execution of code upon receiving
+  :code:`SIGHUP`, :code:`SIGUSR1`, or :code:`SIGUSR2`
+- Optional systemd integration--sends :code:`READY=1` message when startup is complete
+- Complete `mypy <http://mypy-lang.org/>`_ type annotations
+
+
+Use Cases
+---------
+
+The use cases are endless!
+But specifically, :code:`flagman` is useful to adapt services that do not handle
+signals in a convenient way for your infrastructure.
+
+I wrote :code:`flagman` to solve a specific problem, examined in
+`A Real-World Use`_ below.
+
 The Anatomy of an Action
 ------------------------
+
+Actions are the primary workhorse of :code:`flagman`.
+Writing your own actions allows for infinite possible uses of the tool!
 
 The Action Class
 ^^^^^^^^^^^^^^^^
@@ -92,12 +117,14 @@ The docstring is parsed and becomes the documentation for the action in the CLI 
 .. code-block:: sh
 
     $ flagman --list
-    name        - description [(argument: type, ...)]
+    name  - description [(argument: type, ...)]
     --------------------------------------------------------------------------------
-    print       - A simple Action that prints messages at the various stages of
-                  execution. (message: str)
+    print - A simple Action that prints messages at the various stages of execution.
+            (message: str)
+
 
 If the :code:`Action` takes arguments, it is wise to document them here.
+The name of the action is defined in an entry point--see `Registering an Action`_ below.
 
 Next is the :code:`set_up()` method.
 
@@ -136,6 +163,13 @@ Perform whatever action you wish here.
 This method is called once for each time :code:`flagman` is signaled with the proper
 signal, assuming low enough rates of incoming signals.
 See below in the `Overlapping Signals`_ section for more information.
+
+Because of :code:`flagman`'s architecture, it is safe to do *anything* inside the
+:code:`run()` method.
+It is not actually called from the signal handler, but in the main execution loop
+of the program.
+Therefore, normally "risky" things to do in signal handlers involving locks, etc.
+(including using the :code:`logging` module, for example) are completely safe.
 
 Finally, there is the :code:`tear_down()` method.
 
@@ -187,6 +221,28 @@ been closed and will not remove it from the list of actions to be run until the 
 time :code:`run()` would be called,
 i.e. the next time the signal is delivered for the action.
 
+Registering an Action
+^^^^^^^^^^^^^^^^^^^^^
+
+:code:`flagman` detects available actions in the :code:`flagman.action` entry point
+group.
+Actions must be distributed in packages with this entry point defined.
+For instance, here is how the built-in actions are referenced in :code:`flagman`'s
+:code:`setup.cfg`:
+
+.. code-block:: ini
+
+    [options.entry_points]
+    flagman.action =
+        print = flagman.actions:PrintAction
+        delay_print = flagman.actions:DelayedPrintAction
+        print_once = flagman.actions:PrintOnceAction
+
+The name to the left of the :code:`=` is how the action will be referenced in the CLI.
+The entry point specifier to the right of the :code:`=` points to the class implementing
+the action.
+See `the Setuptools documentation <https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins>`_ for more information about using entry points.
+
 
 Overlapping Signals
 -------------------
@@ -220,13 +276,104 @@ For example, take the following sequence of events.
 #. :code:`flagman` returns to sleep until the next handled signal arrives
 
 
+A Real-World Use
+----------------
+
+I have a multi-layered DNS setup that involves ALIAS records that are only resolved on
+a hidden master and are passed as A or AAAA records to the authoritative slaves.
+
+I wanted to check if the resolved value of the ALIAS records have changed and send out
+DNS NOTIFYs to the slaves when they do, but I didn't want to store state in a file
+on disk.
+
+Enter :code:`flagman`. I wrote an action that queries the hidden master and saves the
+values of the records I'm interested in as member variables. If the values have changed
+since the last run, the hidden master's REST API is called for force the sending of a
+NOTIFY out to its slaves.
+
+This is integrated with three systemd units:
+
+.. code-block:: ini
+
+    # flagman.service
+    [Unit]
+    Description=Run flagman
+
+    [Service]
+    Type=notify
+    NotifyAccess=main
+    ExecStart=/path/to/flagman --usr1 dnscheck
+
+.. code-block:: ini
+
+    # flagman-notify.service
+    [Unit]
+    Description=Send SIGUSR1 to flagman
+
+    [Service]
+    Type=oneshot
+    ExecStart=/bin/systemctl kill -s SIGUSR1 flagman.service
+
+.. code-block:: ini
+
+    # flagman-notify.timer
+    [Unit]
+    Description=Run flagman-notify hourly
+
+    [Timer]
+    OnCalendar=hourly
+    RandomizedDelaySec=300
+    Persistent=true
+
+    [Install]
+    WantedBy=timers.target
+
+
+Simple? Not quite. But quite extensible and useful in a variety of situations.
+
+
+
+CLI Reference
+-------------
+
+-h, --help            show this help message and exit
+--list, -l            list known actions and exit
+--hup ACTION          add an action for SIGHUP
+--usr1 ACTION         add an action for SIGUSR1
+--usr2 ACTION         add an action for SIGUSR2
+--successful-empty    if all actions are removed, exit with 0 instead of the default 1
+--no-systemd          do not notify systemd about status
+--quiet, -q           only output critial messages; overrides `--verbose`
+--verbose, -v         increase the loglevel; pass multiple times for more verbosity
+
+Notes
+^^^^^
+
+- Options to add actions take the argument *ACTION*, the action name as shown in
+  :code:`flagman --list`, followed by an action-defined number of arguments, which are
+  also documented in :code:`flagman --list`.
+  See the output of :code:`flagman --help` for a more complete view of this.
+- All options to add actions for signals may be passed multiple times.
+- When a signal with multiple actions is handled, the actions are guaranteed to
+  be taken in the order they were passed on the command line.
+- Calling with no actions set is a critical error and will cause an immediate
+  exit with code 2.
+
 Installation
 ------------
+:code:`flagman` has no required dependencies outside the Python Standard Library.
+
 At the moment, installation must be performed via GitHub:
 
 .. code-block:: sh
 
     $ pip install git+https://github.com/scolby33/flagman.git
+
+For prettier output for :code:`flagman --list`, install the :code:`color` extra:
+
+.. code-block:: sh
+
+    $ pip install git+https://github.com/scolby33/flagman.git[color]
 
 :code:`flagman` targets Python 3 and tests with Python 3.7.
 Versions earlier than 3.7 are not guaranteed to work.
