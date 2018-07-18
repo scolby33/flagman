@@ -41,7 +41,6 @@ jobs:
 matrix:
   allow_failures:
     - env: TOXENV=doc8
-    - env: TOXENV=readme
     - env: TOXENV=docs
     - env: TOXENV=py
 
