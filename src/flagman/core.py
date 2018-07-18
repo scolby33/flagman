@@ -112,7 +112,7 @@ def set_handlers() -> None:
         if len(ACTION_BUNDLES[signum]) > 0:
 
             def handler(
-                num: int, frame: FrameType
+                num: int, _frame: FrameType
             ) -> None:  # noqa: D403 (capitalization)
                 """flagman handler for {}.""".format(signum.name)
                 SIGNAL_FLAGS.add(num)

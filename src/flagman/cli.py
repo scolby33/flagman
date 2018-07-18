@@ -44,7 +44,7 @@ EPILOG_TEXT = """NOTES:
    exit with code 2."""
 
 
-def _sigterm_handler(signum: int, frame: FrameType) -> None:
+def _sigterm_handler(signum: int, _frame: FrameType) -> None:
     """Raise SystemExit on SIGTERM."""
     sys.exit('from sigterm handler')
 
