@@ -5,6 +5,7 @@ Contains the logic to implement signal handlers and dispatch to user-defined fun
 """
 import logging
 import signal
+from operator import attrgetter
 from types import FrameType
 from typing import (
     Iterable,
@@ -24,9 +25,13 @@ from flagman.types import ActionArgument, ActionName, SignalNumber
 
 logger = logging.getLogger(__name__)
 
+_value_getter = attrgetter('value')
+
 #: Signals in this list are handled by flagman.
 #: The CLI module auto-generates the appropriate CLI option for each signal.
-HANDLED_SIGNALS: List[signal.Signals] = [signal.SIGUSR1, signal.SIGUSR2, signal.SIGHUP]
+HANDLED_SIGNALS: List[signal.Signals] = sorted(
+    {signal.SIGHUP, signal.SIGUSR1, signal.SIGUSR2}, key=_value_getter
+)
 
 #: The global flag set for raised signals.
 #: A signal that has been delivered to a handler will have its number in the set.
