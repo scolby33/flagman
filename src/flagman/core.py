@@ -7,16 +7,7 @@ import logging
 import signal
 from operator import attrgetter
 from types import FrameType
-from typing import (
-    Iterable,
-    List,
-    Mapping,
-    MutableSequence,
-    MutableSet,
-    Sequence,
-    Type,
-    Union,
-)
+from typing import Iterable, List, Mapping, MutableSet, Sequence, Type, Union
 
 import pkg_resources
 
