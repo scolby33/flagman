@@ -178,6 +178,7 @@ def main() -> Optional[int]:  # noqa: D401 (First line should be in imperative m
     run()
 
     # if we got here, run() exited because there were no actions left
+    assert isinstance(args.successful_empty, bool)  # noqa: S101 (assert)
     return args.successful_empty
 
 
