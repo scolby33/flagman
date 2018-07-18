@@ -76,7 +76,7 @@ def create_action_bundles(
             try:
                 actions.append((KNOWN_ACTIONS[action_call[0]], action_call[1:]))
             except KeyError:
-                logger.error('Unknown action `%s`; skipping', action_call[0])
+                logger.warning('Unknown action `%s`; skipping', action_call[0])
         action_generators = [
             prime_action_generator(action[0], action[1]) for action in actions
         ]
