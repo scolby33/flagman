@@ -2,7 +2,7 @@ flagman |python_versions| |license| |develop_build| |develop_coverage|
 =======================================================================
 Perform arbitrary actions on signals.
 
-.. |python_versions| image:: https://img.shields.io/badge/python->%3D3.7-blue.svg?style=flat-square
+.. |python_versions| image:: https://img.shields.io/badge/python-3.7-blue.svg?style=flat-square
     :target: https://www.youtube.com/watch?v=p33CVV29OG8&t=59m30s
     :alt: Supports Python 3.7
 .. |license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
