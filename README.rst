@@ -45,6 +45,9 @@ Perform arbitrary actions on signals.
 The Anatomy of an Action
 ------------------------
 
+The Action Class
+^^^^^^^^^^^^^^^^
+
 Actions are instances of the abstract base class :code:`flagman.Action`.
 Let's look at the included :code:`PrintAction` as an illustrative example.
 
