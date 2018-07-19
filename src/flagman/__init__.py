@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Perform arbitrary actions on signals."""
+__version__ = '0.1.0-dev'
+
 from flagman import actions
 from flagman import types
 from flagman.actions import Action
