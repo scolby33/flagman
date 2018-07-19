@@ -150,7 +150,7 @@ needed), you can get them here.
 :code:`flagman` itself does not provide facilities for parsing the environment,
 configuration files, etc.
 
-Next we have the most important method, :code:`run`. This is the only abstract method
+Next we have the most important method, :code:`run()`. This is the only abstract method
 on :code:`Action` and as such it must be implemented.
 
 .. code-block:: python
@@ -332,7 +332,6 @@ This is integrated with three systemd units:
 Simple? Not quite. But quite extensible and useful in a variety of situations.
 
 
-
 CLI Reference
 -------------
 
@@ -359,6 +358,7 @@ Notes
 - Calling with no actions set is a critical error and will cause an immediate
   exit with code 2.
 
+
 Installation
 ------------
 :code:`flagman` has no required dependencies outside the Python Standard Library.
@@ -378,11 +378,13 @@ For prettier output for :code:`flagman --list`, install the :code:`color` extra:
 :code:`flagman` targets Python 3 and tests with Python 3.7.
 Versions earlier than 3.7 are not guaranteed to work.
 
+
 Changelog
 ---------
 Changes as of 18 July 2018
 
 - Initial implementation of the flagman functionality.
+
 
 Contributing
 ------------
@@ -393,6 +395,7 @@ If you have a bug or issue to report, please visit the
 `issues page on GitHub <https://github.com/scolby33/flagman/issues>`_ and open an issue there.
 
 If you want to make a code contribution, feel free to open a pull request!
+
 
 License
 -------
