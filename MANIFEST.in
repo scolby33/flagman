@@ -1,4 +1,5 @@
 graft src
+graft tests
 graft docs
 
 include .flake8
