@@ -50,9 +50,10 @@ def create_action_bundles(
 ) -> int:
     """Parse the enabled actions and insert them into the global ACTION_BUNDLES mapping.
 
-    The input dictionary should be like
-    `{'usr1': [['action1', 'arg1a', 'arg2a'], ['action2', 'arg2a']],
-     'usr2': [['action3'], ['action4', 'arg4a', 'arg4b']]}`.
+    The input dictionary should be like::
+
+        {'usr1': [['action1', 'arg1a', 'arg2a'], ['action2', 'arg2a']],
+         'usr2': [['action3'], ['action4', 'arg4a', 'arg4b']]}
 
 
     :param args_dict: a mapping of strings to an Iterable of Action names
