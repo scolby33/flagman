@@ -2,6 +2,8 @@ graft src
 graft tests
 graft docs
 
+prune docs/build
+
 include .flake8
 include .travis.yml
 include doc8.ini
