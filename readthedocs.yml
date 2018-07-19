@@ -1,0 +1,8 @@
+###############################
+# Read the Docs Configuration #
+###############################
+build:
+    image: latest
+
+python:
+    version: 3.6
