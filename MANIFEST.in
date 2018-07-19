@@ -4,6 +4,7 @@ graft docs
 
 prune docs/build
 
+include .bumpversion.cfg
 include .flake8
 include .travis.yml
 include doc8.ini
