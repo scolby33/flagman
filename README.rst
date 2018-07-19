@@ -1,5 +1,5 @@
-flagman |python_versions| |license| |develop_build| |develop_coverage|
-=======================================================================
+flagman |python_versions| |license| |develop_docs| |develop_build| |develop_coverage|
+=====================================================================================
 Perform arbitrary actions on signals.
 
 .. |python_versions| image:: https://img.shields.io/badge/python-3.7-blue.svg?style=flat-square
@@ -8,6 +8,9 @@ Perform arbitrary actions on signals.
 .. |license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
     :target: LICENSE.rst
     :alt: MIT License
+.. |develop_docs| image:: https://img.shields.io/readthedocs/flagman/latest.svg?style=flat-square
+    :target: https://flagman.readthedocs.io/
+    :alt: Development Docs Build Status
 .. |develop_build| image:: https://img.shields.io/travis/com/scolby33/flagman/develop.svg?style=flat-square
     :target: https://travis-ci.com/scolby33/flagman
     :alt: Development Build Status
@@ -41,6 +44,8 @@ Perform arbitrary actions on signals.
     cleanup  # the tear_down phase of the two remaining actions
     cleanup
 
+Check out the full `documentation <https://flagman.readthedocs.io/>`_ for more
+information.
 
 .. contents:: :local:
 

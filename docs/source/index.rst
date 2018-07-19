@@ -16,7 +16,7 @@
 Welcome to flagman!
 ===================
 
-|python_versions| |license| |develop_build| |develop_coverage|
+|python_versions| |license| |develop_docs| |develop_build| |develop_coverage|
 
 Perform arbitrary actions on signals.
 
@@ -26,6 +26,9 @@ Perform arbitrary actions on signals.
 .. |license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
     :target: LICENSE.rst
     :alt: MIT License
+.. |develop_docs| image:: https://img.shields.io/readthedocs/flagman/latest.svg?style=flat-square
+    :target: https://flagman.readthedocs.io/
+    :alt: Development Docs Build Status
 .. |develop_build| image:: https://img.shields.io/travis/com/scolby33/flagman/develop.svg?style=flat-square
     :target: https://travis-ci.com/scolby33/flagman
     :alt: Development Build Status
