@@ -84,7 +84,6 @@ pygments_style = 'sphinx'
 if os.environ.get('READTHEDOCS', None):
     tags.add('readthedocs')
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
