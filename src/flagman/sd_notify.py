@@ -3,7 +3,7 @@
 __license__ = """The MIT License (MIT)
 
 Copyright (c) 2016 Brett Bethke
-Modifications Copyrignt (c) 2018 Scott Colby
+Modifications Copyright (c) 2018 Scott Colby
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
